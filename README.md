@@ -164,3 +164,145 @@ Each file corresponds to a different subset of companies or time periods generat
 Importantly, the scoring methodology (`ai_innovation_and_adoption_scoring.py`) remains unchanged across all runs.
 
 These datasets are complementary and jointly used in the empirical analysis to improve coverage of firms and time periods.
+
+---
+
+## Fundamentals & Market Data
+
+### Data Source
+
+The fundamental and market datasets are constructed from a combination of WRDS Compustat, Wind, and external benchmark data.
+
+The initial firm universe is defined by merging S&P 500 constituents with firms identified in the patent dataset, resulting in a broad sample of publicly listed U.S. companies.
+
+---
+
+### Fundamental Data
+
+Fundamental data are obtained from WRDS Compustat.
+
+The dataset includes firm-level quarterly financial variables:
+
+- Revenue  
+- Net income  
+- R&D expenses  
+- Capital expenditures (CAPEX)  
+- Total assets and equity (used to construct leverage)  
+- Industry classification  
+
+All variables are aligned to **calendar quarters** to ensure consistency with AI exposure measures.
+
+- Sample period: 2016–2023  
+- Coverage: 553 firms  
+- Data dimension: 17,236 observations  
+
+**File:**
+
+`data/raw/Company_Data/Fundamental_Data.csv`
+
+---
+
+### Market Data
+
+Market data are obtained from Wind.
+
+The dataset includes:
+
+- Quarterly stock returns  
+- Realized volatility (standard deviation of daily log returns within each quarter)  
+- Market capitalization  
+- Book-to-market ratio  
+
+To maintain a forward-looking empirical design, returns and volatility at time \( t+1 \) are used as dependent variables in regressions, while AI exposure is measured at time \( t \).
+
+- Sample period: 2016–2025  
+- Coverage: 542 firms  
+
+**Files:**
+
+- `data/raw/Company_Data/Return_Data.xlsx`  
+- `data/raw/Company_Data/Volatility_Data.xlsx`  
+- `data/raw/Company_Data/MarketCap_Data.xlsx`  
+- `data/raw/Company_Data/BM_Data.xlsx`  
+
+---
+
+### Additional Data
+
+#### Fama-French Factors
+
+Fama-French 5-factor data are used for asset pricing regressions.
+
+**File:**
+
+`data/raw/F-F_Research_Data_5_Factors_2x3.xlsx`
+
+---
+
+#### S&P 500 Constituents
+
+Used to define the baseline firm universe and facilitate merging with patent-identified firms.
+
+**File:**
+
+`data/raw/sp500_constituents.csv`
+
+---
+
+### Data Processing Pipeline
+
+The fundamental, market, and AI exposure datasets are merged to construct the final empirical dataset.
+
+The main processing steps are:
+
+#### 1. Firm alignment
+- Map all datasets to a common firm identifier (ticker)  
+- Align time dimension at the quarterly level  
+
+#### 2. Patent data aggregation
+- Aggregate patent-based measures to the (ticker, quarter) level  
+- Ensure consistency between subsidiary and parent firm mapping  
+
+#### 3. Dataset merging
+- Merge:
+  - Fundamental data  
+  - Market data  
+  - AI exposure measures (patent and transcript-based)  
+
+#### 4. Sample filtering
+- Drop observations with missing key variables:
+  - \( \text{return}_{t+1} \), \( \text{volatility}_{t+1} \)  
+  - Market capitalization, book-to-market ratio  
+  - Net income, leverage  
+  - AI exposure measures  
+
+#### 5. Data cleaning
+- Fill zeros where economically meaningful:
+  - R&D, CAPEX, patent counts  
+- Winsorize all continuous variables at the 1st and 99th percentiles  
+
+#### 6. Variable construction
+- Compute:
+  - Net income margin  
+  - Log-transformed variables  
+  - Composite AI score (average of innovation and adoption scores)  
+
+#### 7. Standardization
+- Standardize variables for regression analysis  
+
+---
+
+### Output
+
+The final dataset is a firm-quarter level panel used for empirical analysis.
+
+The final sample consists of **509 firms**.
+
+---
+
+### Notes
+
+- Raw Compustat and Wind data are included in this repository for reproducibility.  
+- Some intermediate transformations (e.g., reshaping or merging formats) are performed within the analysis notebooks.  
+- Users may need to adjust file paths before running the code.
+
