@@ -151,6 +151,16 @@ export OPENROUTER_MODEL=meta-llama/llama-3.3-70b-instruct
 ---
 ### Output
 
-The final output of this step is: `data/processed/company_quarter_ai_scores_llama_strict.csv`, This file contains firm-quarter-level transcript-based AI adoption and AI innovation scores, which are later used in the asset pricing regressions.
+The scoring pipeline produces firm-quarter-level AI adoption and innovation measures.
 
+Due to iterative improvements in transcript coverage (e.g., expanding the set of companies included in the retrieval step), the scoring script was run multiple times on updated transcript datasets. As a result, several output files are included:
 
+- `company_quarter_ai_scores_llama_strict.csv`  
+- `company_quarter_ai_scores_llama_strict_20242025.csv`  
+- `company_quarter_ai_scores_target22_ticker.csv`  
+
+Each file corresponds to a different subset of companies or time periods generated from separate runs of the transcript retrieval script (`fetch_earnings_transcripts_final_ver2.py`).
+
+Importantly, the scoring methodology (`ai_innovation_and_adoption_scoring.py`) remains unchanged across all runs.
+
+These datasets are complementary and jointly used in the empirical analysis to improve coverage of firms and time periods.
