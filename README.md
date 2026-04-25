@@ -155,9 +155,9 @@ The scoring pipeline produces firm-quarter-level AI adoption and innovation meas
 
 Due to iterative improvements in transcript coverage (e.g., expanding the set of companies included in the retrieval step), the scoring script was run multiple times on updated transcript datasets. As a result, several output files are included:
 
-- `company_quarter_ai_scores_llama_strict.csv`  
-- `company_quarter_ai_scores_llama_strict_20242025.csv`  
-- `company_quarter_ai_scores_target22_ticker.csv`  
+- `data/processed/company_quarter_ai_scores/company_quarter_ai_scores_llama_strict.csv`  
+- `data/processed/company_quarter_ai_scores/company_quarter_ai_scores_llama_strict_20242025.csv`  
+- `data/processed/company_quarter_ai_scores/company_quarter_ai_scores_target22_ticker.csv`  
 
 Each file corresponds to a different subset of companies or time periods generated from separate runs of the transcript retrieval script (`fetch_earnings_transcripts_final_ver2.py`).
 
