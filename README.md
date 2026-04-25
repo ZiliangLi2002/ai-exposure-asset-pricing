@@ -91,7 +91,6 @@ The patent data processing is implemented in: `Thesis_Patent_Data_Ticker_Matchin
 Please update local file paths before running the notebook.
 
 ---
----
 
 ## Earnings Call Transcript AI Scoring
 
@@ -148,8 +147,9 @@ The scoring script uses OpenRouter for LLM-based classification. API credentials
 ```bash
 export OPENROUTER_API_KEY=your_api_key
 export OPENROUTER_MODEL=meta-llama/llama-3.3-70b-instruct
-
-### Main Output
+```
+---
+### Output
 
 The final output of this step is: `data/processed/company_quarter_ai_scores_llama_strict.csv`, This file contains firm-quarter-level transcript-based AI adoption and AI innovation scores, which are later used in the asset pricing regressions.
 
