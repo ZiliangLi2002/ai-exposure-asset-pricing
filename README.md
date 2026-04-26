@@ -16,7 +16,7 @@ Each observation corresponds to a patent document and includes:
 - Publication date (`pub_dt`)
 - AI classification probabilities (e.g., `predict86_any_ai`)
 
-In this project, we use the `predict86_any_ai` indicator to identify AI-related patents, as it provides a stricter and higher-precision classification.
+In this project, we use the `predict86_any_ai` indicator to identify AI-related patents, as it provides a balanced tradeoff between precision and recall to approximate the true volume of AI-related innovation in the data.
 
 ---
 
