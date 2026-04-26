@@ -249,60 +249,161 @@ Used to define the baseline firm universe and facilitate merging with patent-ide
 
 ---
 
-### Data Processing Pipeline
-
-The fundamental, market, and AI exposure datasets are merged to construct the final empirical dataset.
-
-The main processing steps are:
-
-#### 1. Firm alignment
-- Map all datasets to a common firm identifier (ticker)  
-- Align time dimension at the quarterly level  
-
-#### 2. Patent data aggregation
-- Aggregate patent-based measures to the (ticker, quarter) level  
-- Ensure consistency between subsidiary and parent firm mapping  
-
-#### 3. Dataset merging
-- Merge:
-  - Fundamental data  
-  - Market data  
-  - AI exposure measures (patent and transcript-based)  
-
-#### 4. Sample filtering
-- Drop observations with missing key variables:
-  - \( \text{return}_{t+1} \), \( \text{volatility}_{t+1} \)  
-  - Market capitalization, book-to-market ratio  
-  - Net income, leverage  
-  - AI exposure measures  
-
-#### 5. Data cleaning
-- Fill zeros where economically meaningful:
-  - R&D, CAPEX, patent counts  
-- Winsorize all continuous variables at the 1st and 99th percentiles  
-
-#### 6. Variable construction
-- Compute:
-  - Net income margin  
-  - Log-transformed variables  
-  - Composite AI score (average of innovation and adoption scores)  
-
-#### 7. Standardization
-- Standardize variables for regression analysis  
-
----
-
-### Output
-
-The final dataset is a firm-quarter level panel used for empirical analysis.
-
-The final sample consists of **509 firms**.
-
----
-
 ### Notes
 
 - Raw Compustat and Wind data are included in this repository for reproducibility.  
 - Some intermediate transformations (e.g., reshaping or merging formats) are performed within the analysis notebooks.  
 - Users may need to adjust file paths before running the code.
 
+---
+## Empirical Analysis
+
+### Overview
+
+The empirical analysis is implemented in:
+
+`notebooks/2_empirical_analysis.ipynb`
+
+A PDF version of the notebook is also provided for easy inspection:
+
+`notebooks/Thesis_Empirical_Analysis.ipynb - Colab.pdf`
+
+This notebook integrates the full research pipeline, including data construction, regression analysis, and asset pricing tests.
+
+---
+
+### Data Inputs
+
+The notebook uses the following datasets:
+
+#### Fundamental & Market Data
+- `data/raw/Company_Data/Fundamental_Data.csv`
+- `data/raw/Company_Data/Return_Data.xlsx`
+- `data/raw/Company_Data/Volatility_Data.xlsx`
+- `data/raw/Company_Data/MarketCap_Data.xlsx`
+- `data/raw/Company_Data/BM_Data.xlsx`
+
+#### Patent-Based AI Exposure Data
+- `data/processed/firm_quarter_with_ticker_only.csv`
+
+#### Transcripts-Based AI Exposure Data
+- `data/processed/company_quarter_ai_scores/company_quarter_ai_scores_llama_strict.csv`  
+- `data/processed/company_quarter_ai_scores/company_quarter_ai_scores_llama_strict_20242025.csv`  
+- `data/processed/company_quarter_ai_scores/company_quarter_ai_scores_target22_ticker.csv`  
+
+#### Additional Data
+- `data/raw/sp500_constituents.csv`
+- `data/raw/F-F_Research_Data_5_Factors_2x3.xlsx`
+
+---
+
+### Data Processing Pipeline
+
+The notebook performs the following steps:
+
+#### 1. Fundamental Data Construction
+- Load WRDS Compustat data
+- Align to calendar quarters
+- Construct variables such as leverage and firm characteristics  
+
+#### 2. Market Data Transformation
+- Convert wide-format Excel data into long panel format  
+- Construct:
+  - Future return \( \text{return}_{t+1} \)  
+  - Future volatility \( \text{volatility}_{t+1} \)  
+
+#### 3. AI Exposure Integration
+- Merge:
+  - Transcript-based AI scores  
+  - Patent-based AI measures  
+- Construct composite AI exposure score  
+
+#### 4. Data Cleaning
+- Drop observations with missing key variables  
+- Fill zeros for economically meaningful variables (R&D, CAPEX, patents)  
+- Apply winsorization at 1% and 99%  
+- Construct:
+  - Log-transformed variables  
+  - Net income margin  
+- Standardize variables within each quarter  
+
+The final sample consists of **509 firms**.
+
+---
+
+### Panel Regression
+
+The notebook estimates firm-level panel regressions of the form:
+
+\[
+Y_{i,t+1} = \beta \cdot AI_{i,t} + \gamma \cdot Controls_{i,t} + \text{FE} + \epsilon_{i,t}
+\]
+
+#### Dependent Variables
+- Future return \( \text{return}_{t+1} \)  
+- Future volatility \( \text{volatility}_{t+1} \)  
+
+#### Controls
+- Firm size (market capitalization)  
+- Book-to-market ratio  
+- Leverage  
+- Revenue  
+- Profitability (net income margin)  
+- R&D and CAPEX  
+
+#### Fixed Effects
+- Time (quarter)
+- Industry  
+
+#### Standard Errors
+- Clustered at the firm level  
+
+---
+
+### Portfolio Analysis
+
+#### AI vs Non-AI
+- Firms are split into AI vs non-AI groups based on AI exposure  
+- Compute:
+  - Equal-weighted returns  
+  - Value-weighted returns  
+- Evaluate using Newey-West adjusted statistics  
+
+#### High minus Low AI (HML)
+- Firms are sorted into AI tertiles within each quarter  
+- Construct High-minus-Low (HML) portfolios  
+
+---
+
+### Fama-French Factor Analysis
+
+- Convert FF5 factors from monthly to quarterly frequency  
+- Estimate:
+
+\[
+R_{HML} - R_f = \alpha + \beta F + \epsilon
+\]
+
+- Use Newey-West (HAC) standard errors  
+- Evaluate whether AI-based portfolios generate abnormal returns  
+
+---
+
+### Output
+
+The notebook produces:
+
+- Cleaned firm-level panel dataset  
+- Regression results (coefficients, t-statistics)  
+- Portfolio return series  
+- Fama-French regression outputs  
+
+---
+
+### Notes
+
+- The notebook is designed as a **single end-to-end empirical pipeline**  
+- Some steps (e.g., WRDS access) require credentials  
+- File paths are currently configured for a local/Google Drive environment and may need to be adjusted  
+
+The PDF version provides a static view of all outputs and figures for reproducibility and review.
