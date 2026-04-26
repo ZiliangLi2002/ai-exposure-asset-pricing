@@ -231,7 +231,8 @@ To maintain a forward-looking empirical design, returns and volatility at time \
 
 #### Fama-French Factors
 
-Fama-French 5-factor data are used for asset pricing regressions.
+Fama-French 5-factor data are used for asset pricing regressions. 
+The data are sourced from the [Ken French Data Library](https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html), which provides standard factor returns widely used in empirical finance.
 
 **File:**
 
@@ -308,7 +309,7 @@ The empirical pipeline consists of the following steps:
   - Log AI patents
   - Adoption score
   - Innovation score
-  - Composite AI score  
+  - Composite AI score as the mean of adoption and innovation score
 
 ---
 
@@ -319,7 +320,7 @@ The empirical pipeline consists of the following steps:
 - Log-transform key variables  
 - Standardize variables within each quarter  
 
-The final sample contains approximately **509 firms**.
+The final sample contains **509 firms**.
 
 ---
 
@@ -363,9 +364,9 @@ Y_{i,t+1} = \alpha + \beta AI_{i,t} + \gamma Controls_{i,t} + FE_{industry(i)} +
 Due to high correlation among AI measures, regressions are run **separately for each AI variable**:
 - Log AI patents  
 - AI share  
-- Adoption score  
-- Innovation score  
-- Composite score  
+- AI Adoption score  
+- AI Innovation score  
+- AI Composite score  
 
 ---
 
@@ -393,10 +394,10 @@ Due to high correlation among AI measures, regressions are run **separately for 
 
 ## Joint Regression
 
-Joint regressions including both patent-based and transcript-based measures show:
+Joint regressions of log AI patent and AI share show:
 
-- Patent measures lose significance  
-- Transcript-based measures retain explanatory power  
+- Patent-based measures are not effective
+- This is also the reason why we do not include patent-based measures in the calculation of AI composite score.
 
 **Conclusion:**  
 Patent-based AI measures are less informative for asset pricing compared to transcript-based measures.
@@ -462,12 +463,14 @@ R^{portfolio}_{t} - R_{f,t}
 
 ### Findings
 
-- For high vs. low AI portfolio, the value-weighted portfolios shows positive and significant constant
-- For industry-neutral high vs. low AI portfolio, both value-weighted and equal-weighted portfolios shows positive and significant constant
+- For AI vs. non-AI portfolio, both value-weighted and equal-weighted portfolio shows insignificant constant
+- For high vs. low AI portfolio, the value-weighted portfolios shows positive and significant constant at 0.05 level.
+- For industry-neutral high vs. low AI portfolio, both value-weighted and equal-weighted portfolios shows positive and significant constant at 0.01 level
 
 **Interpretation:**
 - AI premium survives after controlling for standard risk factors  
-- Exposure is not fully explained by size or factor loadings  
+- We obtain the strongest result, in terms of FF5-adjusted return magnitude and significance level, after we control for the effect of industry.
+- Exposure is not fully explained by FF5 factor loadings  
 
 ---
 
@@ -492,13 +495,14 @@ Cross-sectional regression:
 ## Bad State Tests
 
 Define bad states as:
-- Market return < 0
+- Quarterly Market - RF < 0
 
 Test whether AI portfolios underperform in downturns.
 
 ### Findings
-- No strong evidence that AI portfolios crash in bad states  
-- Suggests AI exposure is **not purely downside risk**
+- Both value-weighted and equal-weighted portfolio earns strong FF5-adjusted returns in normal periods, but the premium disappears and turns negative in bad states
+- This suggests that AI exposure is pro-cyclical and does not hedge downside risk, consistent with a risk-based explanation for its positive average return.
+- This bad-state behavior is **not explained by standard risk factors**
 
 ---
 
@@ -507,7 +511,6 @@ Test whether AI portfolios underperform in downturns.
 - AI exposure is **positively associated with volatility**  
 - Only **transcript-based AI measures predict returns**  
 - AI premium is:
-  - Stronger in small-cap firms
   - Driven by exposure intensity  
   - Robust to industry-neutral sorting  
 - Factor-adjusted results suggest AI is a **distinct priced risk factor**  
