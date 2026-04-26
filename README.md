@@ -288,8 +288,14 @@ The empirical pipeline consists of the following steps:
 ### 2. Market Data Transformation
 - Convert wide-format Excel files into long panel format  
 - Construct forward-looking variables:
-  - Future return: \( \text{return}_{t+1} \)
-  - Future volatility: \( \text{volatility}_{t+1} \)
+  - Future return:
+    ```math
+    return_{t+1}
+    ```
+  - Future volatility:
+    ```math
+    volatility_{t+1}
+    ```
 
 ---
 
@@ -328,8 +334,14 @@ Y_{i,t+1} = \alpha + \beta AI_{i,t} + \gamma Controls_{i,t} + FE_{industry(i)} +
 ```
 
 ### Dependent Variables
-- Future volatility: `volatility_{t+1}`
-- Future return: `return_{t+1}`
+- Future volatility:
+  ```math
+  volatility_{t+1}
+  ```
+- Future return:
+  ```math
+  return_{t+1}
+  ```
 
 ### Controls
 - Size (log market cap)
