@@ -85,7 +85,7 @@ This dataset is used in subsequent empirical analysis, including asset pricing r
 
 ### Code
 
-The patent data processing is implemented in: `Thesis_Patent_Data_Ticker_Matching.ipynb`
+The patent data processing is implemented in: `Notebooks/1_patent_data_processing.ipynb`
 
 
 Please update local file paths before running the notebook.
