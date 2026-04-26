@@ -310,8 +310,8 @@ The notebook performs the following steps:
 
 #### 3. AI Exposure Integration
 - Merge:
-  - Transcript-based AI scores  
-  - Patent-based AI measures  
+  - Transcript-based adoption AI scores  
+  - Transcript-based innovation AI scores  
 - Construct composite AI exposure score  
 
 #### 4. Data Cleaning
