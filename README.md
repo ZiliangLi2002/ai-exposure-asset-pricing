@@ -323,13 +323,13 @@ The final sample contains approximately **509 firms**.
 
 The baseline panel regression is:
 
-\[
+```math
 Y_{i,t+1} = \alpha + \beta AI_{i,t} + \gamma Controls_{i,t} + FE_{industry(i)} + FE_t + \epsilon_{i,t}
-\]
+```
 
 ### Dependent Variables
-- Future volatility \( \text{volatility}_{t+1} \)
-- Future return \( \text{return}_{t+1} \)
+- Future volatility: `volatility_{t+1}`
+- Future return: `return_{t+1}`
 
 ### Controls
 - Size (log market cap)
@@ -384,10 +384,10 @@ Due to high correlation among AI measures, regressions are run **separately for 
 Joint regressions including both patent-based and transcript-based measures show:
 
 - Patent measures lose significance  
-- Adoption-based measures retain explanatory power  
+- Transcript-based measures retain explanatory power  
 
 **Conclusion:**  
-Patent-based AI measures are less informative for asset pricing compared to adoption-based measures.
+Patent-based AI measures are less informative for asset pricing compared to transcript-based measures.
 
 ---
 
@@ -410,7 +410,7 @@ A three-stage portfolio construction is implemented:
 
 ---
 
-### 2. High vs Low AI (HML)
+### 2. High vs Low AI 
 - Restrict to firms with positive AI exposure  
 - Sort into Low / Mid / High tertiles  
 
@@ -436,9 +436,9 @@ A three-stage portfolio construction is implemented:
 
 For each portfolio, estimate:
 
-\[
+```math
 R_{HML} - R_f = \alpha + \beta F + \epsilon
-\]
+```
 
 using FF5 factors:
 - Mkt-RF
@@ -449,11 +449,8 @@ using FF5 factors:
 
 ### Findings
 
-- Equal-weighted portfolios:
-  - Weak and noisy alphas  
-
-- Value-weighted portfolios:
-  - Positive and significant alpha remains  
+- For high vs. low AI portfolio, the value-weighted portfolios shows positive and significant constant
+- For industry-neutral high vs. low AI portfolio, both value-weighted and equal-weighted portfolios shows positive and significant constant
 
 **Interpretation:**
 - AI premium survives after controlling for standard risk factors  
@@ -482,7 +479,7 @@ Cross-sectional regression:
 ## Bad State Tests
 
 Define bad states as:
-- Market return \( < 0 \)
+- Market return < 0
 
 Test whether AI portfolios underperform in downturns.
 
@@ -495,9 +492,9 @@ Test whether AI portfolios underperform in downturns.
 ## Summary of Findings
 
 - AI exposure is **positively associated with volatility**  
-- Only **adoption-based AI measures predict returns**  
+- Only **transcript-based AI measures predict returns**  
 - AI premium is:
-  - Stronger in small-cap firms  
+  - Stronger in small-cap firms
   - Driven by exposure intensity  
   - Robust to industry-neutral sorting  
 - Factor-adjusted results suggest AI is a **distinct priced risk factor**  
