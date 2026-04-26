@@ -449,15 +449,16 @@ A three-stage portfolio construction is implemented:
 For each portfolio, estimate:
 
 ```math
-R_{HML} - R_f = \alpha + \beta F + \epsilon
+R^{portfolio}_{t} - R_{f,t}
+=
+\alpha
++ \beta_{mkt}(Mkt\text{-}RF)_t
++ \beta_{smb}SMB_t
++ \beta_{hml}HML_t
++ \beta_{rmw}RMW_t
++ \beta_{cma}CMA_t
++ \epsilon_t
 ```
-
-using FF5 factors:
-- Mkt-RF
-- SMB
-- HML
-- RMW
-- CMA
 
 ### Findings
 
