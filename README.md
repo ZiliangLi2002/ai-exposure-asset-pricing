@@ -264,10 +264,6 @@ The empirical analysis is implemented in:
 
 `notebooks/2_empirical_analysis.ipynb`
 
-A PDF version of the notebook is also provided for easy inspection:
-
-`notebooks/Thesis_Empirical_Analysis.ipynb - Colab.pdf`
-
 This notebook integrates the full research pipeline, including data construction, regression analysis, and asset pricing tests.
 
 ---
