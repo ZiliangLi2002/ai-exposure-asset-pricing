@@ -264,142 +264,240 @@ The empirical analysis is implemented in:
 
 `notebooks/2_empirical_analysis.ipynb`
 
-This notebook integrates the full research pipeline, including data construction, regression analysis, and asset pricing tests.
+This notebook performs the full asset pricing analysis, including panel regressions, portfolio sorts, factor regressions, and cross-sectional tests.
 
 ---
 
-### Data Inputs
+## Data Processing Pipeline
 
-The notebook uses the following datasets:
+The empirical pipeline consists of the following steps:
 
-#### Fundamental & Market Data
-- `data/raw/Company_Data/Fundamental_Data.csv`
-- `data/raw/Company_Data/Return_Data.xlsx`
-- `data/raw/Company_Data/Volatility_Data.xlsx`
-- `data/raw/Company_Data/MarketCap_Data.xlsx`
-- `data/raw/Company_Data/BM_Data.xlsx`
-
-#### Patent-Based AI Exposure Data
-- `data/processed/firm_quarter_with_ticker_only.csv`
-
-#### Transcripts-Based AI Exposure Data
-- `data/processed/company_quarter_ai_scores/company_quarter_ai_scores_llama_strict.csv`  
-- `data/processed/company_quarter_ai_scores/company_quarter_ai_scores_llama_strict_20242025.csv`  
-- `data/processed/company_quarter_ai_scores/company_quarter_ai_scores_target22_ticker.csv`  
-
-#### Additional Data
-- `data/raw/sp500_constituents.csv`
-- `data/raw/F-F_Research_Data_5_Factors_2x3.xlsx`
+### 1. Fundamental Data Construction
+- Load WRDS Compustat quarterly data  
+- Align all observations to calendar quarters  
+- Construct firm characteristics:
+  - Market capitalization (size)
+  - Book-to-market ratio
+  - Leverage
+  - Revenue
+  - Net income margin
+  - R&D and CAPEX  
 
 ---
 
-### Data Processing Pipeline
+### 2. Market Data Transformation
+- Convert wide-format Excel files into long panel format  
+- Construct forward-looking variables:
+  - Future return: \( \text{return}_{t+1} \)
+  - Future volatility: \( \text{volatility}_{t+1} \)
 
-The notebook performs the following steps:
+---
 
-#### 1. Fundamental Data Construction
-- Load WRDS Compustat data
-- Align to calendar quarters
-- Construct variables such as leverage and firm characteristics  
-
-#### 2. Market Data Transformation
-- Convert wide-format Excel data into long panel format  
+### 3. AI Exposure Integration
+- Merge multiple AI measures:
+  - Patent-based AI measures (innovation)
+  - Transcript-based AI measures (adoption)
 - Construct:
-  - Future return \( \text{return}_{t+1} \)  
-  - Future volatility \( \text{volatility}_{t+1} \)  
+  - AI share
+  - Log AI patents
+  - Adoption score
+  - Innovation score
+  - Composite AI score  
 
-#### 3. AI Exposure Integration
-- Merge:
-  - Transcript-based adoption AI scores  
-  - Transcript-based innovation AI scores  
-- Construct composite AI exposure score  
+---
 
-#### 4. Data Cleaning
+### 4. Data Cleaning & Transformation
 - Drop observations with missing key variables  
-- Fill zeros for economically meaningful variables (R&D, CAPEX, patents)  
-- Apply winsorization at 1% and 99%  
-- Construct:
-  - Log-transformed variables  
-  - Net income margin  
+- Fill zeros where economically meaningful (R&D, CAPEX, patents)  
+- Winsorize all variables at the 1% and 99% levels  
+- Log-transform key variables  
 - Standardize variables within each quarter  
 
-The final sample consists of **509 firms**.
+The final sample contains approximately **509 firms**.
 
 ---
 
-### Panel Regression
+## Panel Regression
 
-The notebook estimates firm-level panel regressions of the form:
+### Specification
+
+The baseline panel regression is:
 
 \[
-Y_{i,t+1} = \beta \cdot AI_{i,t} + \gamma \cdot Controls_{i,t} + \text{FE} + \epsilon_{i,t}
+Y_{i,t+1} = \alpha + \beta AI_{i,t} + \gamma Controls_{i,t} + FE_{industry(i)} + FE_t + \epsilon_{i,t}
 \]
 
-#### Dependent Variables
-- Future return \( \text{return}_{t+1} \)  
-- Future volatility \( \text{volatility}_{t+1} \)  
+### Dependent Variables
+- Future volatility \( \text{volatility}_{t+1} \)
+- Future return \( \text{return}_{t+1} \)
 
-#### Controls
-- Firm size (market capitalization)  
-- Book-to-market ratio  
-- Leverage  
-- Revenue  
-- Profitability (net income margin)  
-- R&D and CAPEX  
+### Controls
+- Size (log market cap)
+- Book-to-market ratio
+- Leverage
+- Revenue
+- Net income margin
+- R&D
+- CAPEX
 
-#### Fixed Effects
-- Time (quarter)
-- Industry  
-
-#### Standard Errors
-- Clustered at the firm level  
+### Fixed Effects
+- Industry fixed effects  
+- Time (quarter) fixed effects  
 
 ---
 
-### Portfolio Analysis
+### Estimation Strategy
 
-#### AI vs Non-AI
-- Firms are split into AI vs non-AI groups based on AI exposure  
+Due to high correlation among AI measures, regressions are run **separately for each AI variable**:
+- Log AI patents  
+- AI share  
+- Adoption score  
+- Innovation score  
+- Composite score  
+
+---
+
+### Key Findings
+
+#### Volatility
+- All AI exposure measures are **positive and statistically significant predictors of future volatility**
+- Interpretation:
+  - AI exposure captures **technological uncertainty**
+  - R&D → positive effect (innovation risk channel)
+  - Size → negative (large firms less volatile)
+
+---
+
+#### Returns
+- Patent-based measures:
+  - **Not significant for returns**
+  - Suggest AI innovation risk is largely **idiosyncratic**
+
+- Transcript-based measures:
+  - **Positive and significant**
+  - Capture **real business adoption and future cash flow expectations**
+
+---
+
+## Joint Regression
+
+Joint regressions including both patent-based and transcript-based measures show:
+
+- Patent measures lose significance  
+- Adoption-based measures retain explanatory power  
+
+**Conclusion:**  
+Patent-based AI measures are less informative for asset pricing compared to adoption-based measures.
+
+---
+
+## Portfolio Sorts
+
+A three-stage portfolio construction is implemented:
+
+### 1. AI vs Non-AI
+- Compare firms with vs without AI exposure  
 - Compute:
   - Equal-weighted returns  
   - Value-weighted returns  
-- Evaluate using Newey-West adjusted statistics  
+- Evaluate using Newey-West t-statistics  
 
-#### High minus Low AI (HML)
-- Firms are sorted into AI tertiles within each quarter  
-- Construct High-minus-Low (HML) portfolios  
+**Finding:**
+- Equal-weighted results show a weak premium  
+- Value-weighted results are insignificant  
+- Interpretation:
+  - AI premium concentrated in **small and mid-cap firms**
 
 ---
 
-### Fama-French Factor Analysis
+### 2. High vs Low AI (HML)
+- Restrict to firms with positive AI exposure  
+- Sort into Low / Mid / High tertiles  
 
-- Convert FF5 factors from monthly to quarterly frequency  
-- Estimate:
+**Finding:**
+- Strong monotonic pattern:
+  - Higher AI exposure → higher future returns  
+- Premium driven by **intensity**, not just presence of AI  
+
+---
+
+### 3. Industry-Neutral HML
+- Within each (industry, quarter), sort firms into AI tertiles  
+- Construct industry-neutral HML portfolio  
+
+**Finding:**
+- Results remain strong and monotonic  
+- AI premium is **not a Tech vs Non-Tech story**
+- It reflects **within-industry variation in AI exposure**
+
+---
+
+## Fama-French Factor Analysis
+
+For each portfolio, estimate:
 
 \[
 R_{HML} - R_f = \alpha + \beta F + \epsilon
 \]
 
-- Use Newey-West (HAC) standard errors  
-- Evaluate whether AI-based portfolios generate abnormal returns  
+using FF5 factors:
+- Mkt-RF
+- SMB
+- HML
+- RMW
+- CMA
+
+### Findings
+
+- Equal-weighted portfolios:
+  - Weak and noisy alphas  
+
+- Value-weighted portfolios:
+  - Positive and significant alpha remains  
+
+**Interpretation:**
+- AI premium survives after controlling for standard risk factors  
+- Exposure is not fully explained by size or factor loadings  
 
 ---
 
-### Output
+## Fama-MacBeth Regression
 
-The notebook produces:
+Cross-sectional regression:
 
-- Cleaned firm-level panel dataset  
-- Regression results (coefficients, t-statistics)  
-- Portfolio return series  
-- Fama-French regression outputs  
+- Estimate coefficients each quarter  
+- Compute Newey-West t-statistics on time-series of betas  
+
+### Result
+
+- AI composite score is **positively priced**
+- A 1 standard deviation increase in AI exposure:
+  → ~0.69% higher next-quarter return  
+
+**Conclusion:**
+- AI exposure has a **significant cross-sectional pricing effect**
 
 ---
 
-### Notes
+## Bad State Tests
 
-- The notebook is designed as a **single end-to-end empirical pipeline**  
-- Some steps (e.g., WRDS access) require credentials  
-- File paths are currently configured for a local/Google Drive environment and may need to be adjusted  
+Define bad states as:
+- Market return \( < 0 \)
 
-The PDF version provides a static view of all outputs and figures for reproducibility and review.
+Test whether AI portfolios underperform in downturns.
+
+### Findings
+- No strong evidence that AI portfolios crash in bad states  
+- Suggests AI exposure is **not purely downside risk**
+
+---
+
+## Summary of Findings
+
+- AI exposure is **positively associated with volatility**  
+- Only **adoption-based AI measures predict returns**  
+- AI premium is:
+  - Stronger in small-cap firms  
+  - Driven by exposure intensity  
+  - Robust to industry-neutral sorting  
+- Factor-adjusted results suggest AI is a **distinct priced risk factor**  
